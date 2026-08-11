@@ -1,0 +1,257 @@
+<title>PC Boost — Mehr FPS, weniger Lag</title>
+<style>
+  :root{
+    --bg:#0a090d; --bg2:#0d0c12; --panel:#141318; --panel2:#1a1922;
+    --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+    --txt:#f3f2f7; --muted:#8b8794; --dim:#5c5866;
+    --purple:#a78bfa; --pink:#ff4172; --green:#35e0a1; --amber:#ffd24b; --red:#ff5b6e; --blue:#2bb3fb;
+    --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:
+      radial-gradient(900px 500px at 82% -8%,rgba(167,139,250,.10),transparent 60%),
+      radial-gradient(700px 460px at 8% 8%,rgba(255,65,114,.07),transparent 55%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+  a{color:inherit;text-decoration:none}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(10,9,13,.72);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.5px}
+  .bolt{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    box-shadow:0 0 22px rgba(255,65,114,.4);font-size:16px}
+  nav .links{display:flex;gap:26px;align-items:center;font-size:14px;color:var(--muted)}
+  nav .links a:hover{color:var(--txt)}
+  .nav-dl{padding:8px 15px;border-radius:9px;border:1px solid var(--line2);color:var(--txt)!important;font-weight:600}
+  .nav-dl:hover{border-color:var(--purple);background:rgba(167,139,250,.1)}
+  @media(max-width:680px){nav .links a:not(.nav-dl){display:none}}
+
+  /* hero */
+  .hero{padding:78px 0 40px;text-align:center}
+  .eyebrow{display:inline-flex;gap:9px;align-items:center;font-family:var(--mono);font-size:12px;
+    letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+    border:1px solid var(--line);border-radius:100px;padding:7px 15px;margin-bottom:26px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green)}
+  h1{font-size:clamp(48px,9vw,92px);line-height:.98;font-weight:800;letter-spacing:-2px;text-wrap:balance}
+  h1 .grad{background:linear-gradient(115deg,var(--purple),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{font-size:clamp(18px,3vw,23px);color:var(--muted);margin:22px auto 0;max-width:560px;text-wrap:balance}
+
+  /* live panel */
+  .live{margin:44px auto 0;max-width:760px;background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+  .live-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px}
+  .live-title{font-family:var(--mono);font-size:13px;letter-spacing:1px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .live-live{font-family:var(--mono);font-size:11px;color:var(--green);display:flex;gap:6px;align-items:center}
+  .live-live .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+  .gauge{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .gauge .lbl{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase}
+  .gauge .val{font-family:var(--mono);font-size:28px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  canvas{display:block;width:100%;height:120px;border-radius:10px}
+
+  /* cta */
+  .cta{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .dl{display:inline-flex;align-items:center;gap:12px;font-size:18px;font-weight:700;
+    padding:17px 34px;border-radius:13px;color:#fff;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    box-shadow:0 14px 40px -10px rgba(255,65,114,.55);transition:transform .15s,box-shadow .15s}
+  .dl:hover{transform:translateY(-2px);box-shadow:0 20px 50px -10px rgba(255,65,114,.7)}
+  .dl:active{transform:translateY(0)}
+  .dl .sz{font-family:var(--mono);font-size:13px;font-weight:600;opacity:.85}
+  .sub-cta{font-size:14px;color:var(--muted)}
+  .sub-cta code{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);padding:2px 8px;border-radius:6px;color:var(--purple)}
+
+  /* sections */
+  section{padding:64px 0}
+  .sec-h{text-align:center;margin-bottom:44px}
+  .sec-h .k{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--pink);text-transform:uppercase}
+  .sec-h h2{font-size:clamp(30px,5vw,42px);font-weight:800;letter-spacing:-1px;margin-top:10px;text-wrap:balance}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}.gauges{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;transition:border-color .2s,transform .2s}
+  .card:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .card .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:20px;
+    background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);margin-bottom:15px}
+  .card h3{font-size:18px;font-weight:700;margin-bottom:7px}
+  .card p{font-size:14.5px;color:var(--muted)}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{position:relative;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:26px 22px}
+  .step::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:14px;font-weight:700;
+    width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(135deg,var(--purple),var(--pink));margin-bottom:15px}
+  .step h3{font-size:17px;margin-bottom:6px}
+  .step p{font-size:14.5px;color:var(--muted)}
+  .step code{font-family:var(--mono);color:var(--purple)}
+
+  /* trust strip */
+  .trust{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+  @media(max-width:760px){.trust{grid-template-columns:1fr}}
+  .trust .t{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;gap:13px;align-items:flex-start}
+  .trust .t .em{font-size:20px}
+  .trust .t b{display:block;font-size:15px;margin-bottom:2px}
+  .trust .t span{font-size:13.5px;color:var(--muted)}
+
+  /* faq */
+  .faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:2px 20px;transition:border-color .2s}
+  details[open]{border-color:var(--line2)}
+  summary{cursor:pointer;padding:17px 0;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-family:var(--mono);color:var(--purple);font-size:22px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{padding:0 0 18px;color:var(--muted);font-size:15px}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:52px 0 40px;text-align:center;margin-top:20px}
+  .foot-cta{display:inline-flex;gap:10px;align-items:center;padding:13px 24px;border-radius:11px;
+    border:1px solid rgba(88,101,242,.4);background:rgba(88,101,242,.1);font-weight:600;color:var(--txt);margin-bottom:26px}
+  .foot-cta:hover{background:rgba(88,101,242,.18)}
+  footer .small{font-size:13px;color:var(--dim)}
+  footer .small a{color:var(--muted)}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+
+<nav><div class="wrap">
+  <div class="brand"><span class="bolt">⚡</span> PC BOOST</div>
+  <div class="links">
+    <a href="#features">Funktionen</a>
+    <a href="#start">Loslegen</a>
+    <a href="#faq">FAQ</a>
+    <a class="nav-dl" href="#download">Download</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow"><span class="dot"></span> Windows 10 / 11 · komplett kostenlos</div>
+  <h1>Mehr FPS.<br>Weniger Lag.<br><span class="grad">Volle Kontrolle.</span></h1>
+  <p class="tag">PC Boost überwacht und optimiert deinen Windows-PC — Live-Monitor, Gaming-Overlay und über 40 umkehrbare Tweaks. Kein Installer, läuft komplett lokal.</p>
+
+  <div class="live">
+    <div class="live-top">
+      <div class="live-title">⚡ PC BOOST · Live-Monitor</div>
+      <div class="live-live"><span class="dot"></span> LIVE</div>
+    </div>
+    <div class="gauges">
+      <div class="gauge"><div class="lbl">CPU</div><div class="val" id="g-cpu" style="color:var(--green)">—</div></div>
+      <div class="gauge"><div class="lbl">GPU</div><div class="val" id="g-gpu" style="color:var(--blue)">—</div></div>
+      <div class="gauge"><div class="lbl">RAM</div><div class="val" id="g-ram" style="color:var(--amber)">—</div></div>
+    </div>
+    <canvas id="chart" width="1400" height="240" aria-label="Beispielhafter Live-Verlauf von CPU, GPU und RAM"></canvas>
+  </div>
+
+  <div class="cta" id="download">
+    <a class="dl" download="PC-Boost.zip" href="PC-Boost.zip">
+      ⬇ PC Boost herunterladen <span class="sz">· 2,8 MB · ZIP</span>
+    </a>
+    <div class="sub-cta">Oder im Discord: <code>/pcboost</code> tippen — der Bot schickt dir die Datei.</div>
+  </div>
+</div></header>
+
+<section id="features"><div class="wrap">
+  <div class="sec-h"><div class="k">Was drinsteckt</div><h2>Ein Werkzeugkasten für deinen PC</h2></div>
+  <div class="grid">
+    <div class="card"><div class="ic">📊</div><h3>Live-Monitor</h3><p>CPU, RAM, GPU und Temperaturen in Echtzeit — plus ein Gaming-Overlay mit Verlaufsgraphen, das über deinem Spiel bleibt.</p></div>
+    <div class="card"><div class="ic">🚀</div><h3>40+ Tweaks</h3><p>Mehr FPS, weniger Input-Lag, härtere Sicherheit, aufgeräumtes Windows. Jeder Schalter ist mit einem Klick umkehrbar.</p></div>
+    <div class="card"><div class="ic">🔬</div><h3>Wirkungsnachweis</h3><p>Misst nach jeder Änderung, ob sie wirklich etwas gebracht hat — ehrlich, statt leere Versprechen.</p></div>
+    <div class="card"><div class="ic">🧹</div><h3>Aufräumen</h3><p>Temp-Dateien, Autostart-Einträge und vorinstallierte Bloatware loswerden — sicher und nachvollziehbar.</p></div>
+    <div class="card"><div class="ic">🛡️</div><h3>Sicherheit</h3><p>Heuristik-Scan, Telemetrie blockieren, Angriffsfläche verkleinern. Deine Privatsphäre, deine Entscheidung.</p></div>
+    <div class="card"><div class="ic">💾</div><h3>Profile & Selbsttest</h3><p>Deine Einstellungen sichern und auf andere PCs übertragen. Ein Selbsttest zeigt sofort, ob alles läuft.</p></div>
+  </div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <div class="sec-h"><div class="k">In 30 Sekunden startklar</div><h2>So einfach geht's</h2></div>
+  <div class="steps">
+    <div class="step"><h3>Herunterladen</h3><p>Die <code>PC-Boost.zip</code> laden und per Rechtsklick → „Alle extrahieren" entpacken.</p></div>
+    <div class="step"><h3>Starten</h3><p>Doppelklick auf <code>PC Boost starten.vbs</code>. Beim ersten Mal fragt Windows evtl. nach Adminrechten — mit Ja bestätigen.</p></div>
+    <div class="step"><h3>Fertig</h3><p>PC Boost öffnet sich als eigenes Fenster. Kein Installer, nichts bleibt im System zurück.</p></div>
+  </div>
+  <div class="trust">
+    <div class="t"><span class="em">🔒</span><div><b>Läuft komplett lokal</b><span>Keine Anmeldung, keine Cloud. Deine Daten verlassen deinen PC nicht.</span></div></div>
+    <div class="t"><span class="em">↩️</span><div><b>Alles umkehrbar</b><span>Jeder Tweak wird protokolliert und lässt sich mit einem Klick zurücknehmen.</span></div></div>
+    <div class="t"><span class="em">🪶</span><div><b>Kein Installer</b><span>Nur 2,8 MB. Zum Deinstallieren einfach den Ordner löschen.</span></div></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <div class="sec-h"><div class="k">Gut zu wissen</div><h2>Häufige Fragen</h2></div>
+  <div class="faq">
+    <details><summary>Ist PC Boost sicher?</summary><p>Ja. Es läuft lokal, verändert nur umkehrbare Windows-Einstellungen und sammelt keine persönlichen Daten. Jede Änderung landet im Protokoll und lässt sich einzeln zurücksetzen.</p></details>
+    <details><summary>Warnt mein Virenscanner oder SmartScreen?</summary><p>Möglich — weil das Tool nicht kostenpflichtig signiert ist (ein Fehlalarm, kein echter Fund). Bei der blauen SmartScreen-Box einfach auf „Weitere Informationen" → „Trotzdem ausführen".</p></details>
+    <details><summary>Brauche ich Adminrechte?</summary><p>Nur für einige Funktionen wie CPU-Temperatur und bestimmte Tweaks. Der Rest funktioniert auch ohne. Windows fragt bei Bedarf einmalig nach.</p></details>
+    <details><summary>Wie deinstalliere ich es wieder?</summary><p>Gar nicht nötig — es wird nichts installiert. Einfach den Ordner löschen. Vorgenommene Tweaks vorher in der App unter „Änderungen" zurücksetzen.</p></details>
+    <details><summary>Läuft es auch auf macOS oder Linux?</summary><p>Nein, PC Boost ist ein reines Windows-Tool (10 und 11, 64-bit).</p></details>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <a class="foot-cta" href="#download">💬 Community & Support im Discord — <code style="font-family:var(--mono)">/pcboost</code></a>
+  <div class="small">PC Boost · kostenloses Windows-Tool · © 2026 · <a href="#download">Download</a></div>
+</div></footer>
+
+<script>
+(function(){
+  var cvs=document.getElementById('chart'), ctx=cvs.getContext('2d');
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var W=cvs.width, H=cvs.height, N=90;
+  function seed(base,amp){var a=[];for(var i=0;i<N;i++){a.push(base+Math.sin(i/7)*amp*0.5+(Math.random()-0.5)*amp);}return a;}
+  var series=[
+    {data:seed(38,16),color:'#35e0a1',base:38,amp:16,el:document.getElementById('g-cpu'),suf:'%'},
+    {data:seed(55,22),color:'#2bb3fb',base:55,amp:22,el:document.getElementById('g-gpu'),suf:'%'},
+    {data:seed(64,9),color:'#ffd24b',base:64,amp:9,el:document.getElementById('g-ram'),suf:'%'}
+  ];
+  function clamp(v){return Math.max(2,Math.min(99,v));}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    for(var g=1;g<4;g++){var y=H*g/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    var stepX=W/(N-1);
+    series.forEach(function(s){
+      // area
+      ctx.beginPath();
+      for(var i=0;i<N;i++){var x=i*stepX,y=H-(clamp(s.data[i])/100)*(H-14)-7;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
+      var grad=ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,s.color+'33');grad.addColorStop(1,s.color+'00');
+      ctx.fillStyle=grad;ctx.fill();
+      // line
+      ctx.beginPath();
+      for(var j=0;j<N;j++){var x2=j*stepX,y2=H-(clamp(s.data[j])/100)*(H-14)-7;j?ctx.lineTo(x2,y2):ctx.moveTo(x2,y2);}
+      ctx.strokeStyle=s.color;ctx.lineWidth=2.4;ctx.lineJoin='round';ctx.stroke();
+      // endpoint
+      var lx=(N-1)*stepX,ly=H-(clamp(s.data[N-1])/100)*(H-14)-7;
+      ctx.beginPath();ctx.arc(lx,ly,4,0,7);ctx.fillStyle=s.color;ctx.fill();
+    });
+  }
+  function tick(){
+    series.forEach(function(s){
+      s.data.shift();
+      var prev=s.data[s.data.length-1];
+      var nv=prev+(Math.random()-0.5)*s.amp*0.6+(s.base-prev)*0.08;
+      s.data.push(nv);
+      if(s.el)s.el.textContent=Math.round(clamp(nv))+s.suf;
+    });
+    draw();
+  }
+  draw();
+  series.forEach(function(s){if(s.el)s.el.textContent=Math.round(clamp(s.data[N-1]))+s.suf;});
+  if(!reduce)setInterval(tick,900);
+})();
+</script>
